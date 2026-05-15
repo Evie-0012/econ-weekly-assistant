@@ -1,13 +1,14 @@
-import sqlite3
-from openai import OpenAI
+import json, os
 from datetime import datetime, timedelta
-import os
+from openai import OpenAI
 
-DB_PATH = 'wewe-rss.db'
+DATA_FILE = 'weekly_articles.json'
 
 def get_weekly_articles():
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    if not os.path.exists(DATA_FILE):
+        return []
+    with open(DATA_FILE, 'r', encoding='utf-8') as f:
+        return json.load(f)
     
     one_week_ago = int((datetime.now() - timedelta(days=7)).timestamp())
     
