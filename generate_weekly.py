@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import os
 
 # 配置
-DB_PATH = os.path.join('data', 'wewe-rss.db')  # WeWe RSS 数据库路径
+DB_PATH = DB_PATH = 'wewe-rss.db'  # WeWe RSS 数据库路径
 API_KEY = '你的DeepSeek API Key'               # 替换为真实密钥，或改为从环境变量读取
 
 def get_weekly_articles():
@@ -91,5 +91,4 @@ if __name__ == '__main__':
         f.write(weekly)
     
     print(f'周刊已生成：{filename}')
-    print('\n' + weekly)
     print('\n' + weekly)
