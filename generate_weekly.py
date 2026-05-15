@@ -1,47 +1,36 @@
-import json, os
-from datetime import datetime, timedelta
+import json
+import os
 from openai import OpenAI
+from datetime import datetime, timedelta
 
+# 数据文件路径（与 app_weekly.py 同目录的 weekly_articles.json）
 DATA_FILE = 'weekly_articles.json'
 
 def get_weekly_articles():
+    """从 JSON 文件读取文章列表"""
     if not os.path.exists(DATA_FILE):
         return []
     with open(DATA_FILE, 'r', encoding='utf-8') as f:
-        return json.load(f)
-    
-    one_week_ago = int((datetime.now() - timedelta(days=7)).timestamp())
-    
-    cursor.execute('''
-        SELECT title, mp_id, id, publish_time 
-        FROM articles 
-        WHERE publish_time >= ? 
-        ORDER BY publish_time DESC
-    ''', (one_week_ago,))
-    
-    articles = []
-    for title, mp_id, article_id, pub_time in cursor.fetchall():
-        url = f'https://mp.weixin.qq.com/s/{article_id}'
-        date_str = datetime.fromtimestamp(pub_time).strftime('%Y-%m-%d')
-        articles.append((title, mp_id, date_str, url))
-    
-    conn.close()
+        articles = json.load(f)
     return articles
 
 def generate_weekly(articles, api_key=None):
+    """调用大模型生成周刊"""
     if not api_key:
         api_key = os.environ.get('DEEPSEEK_API_KEY', '')
         if not api_key:
             return "未配置 DeepSeek API Key，请先在侧边栏输入。"
-    
+
     if not articles:
-        return "本周暂无新文章，请先运行 fetch_news.py 或上传最新的 weekly_articles.json。"
-    
+        return "本周暂无新文章，请确保已运行 export_econ_weekly.py 并上传 weekly_articles.json。"
+
+    # 构建文章列表（适配字典格式）
     article_list = "\n".join([
-        f"- [{a[2]}] {a[0]}（来源：{a[1]}）\n  链接：{a[3]}"
+        f"- [{a.get('date', '未知日期')}] {a.get('title', '无标题')}（来源：{a.get('source', '未知来源')}）\n  链接：{a.get('url', '')}"
         for a in articles
     ])
-    
+
+    # 提示词
     prompt = f"""你是一个专业的《数字经济周刊》主编。请根据下面提供的真实文章，生成一期周刊。
 
 要求：
@@ -58,17 +47,17 @@ def generate_weekly(articles, api_key=None):
 {article_list}
 
 请生成周刊全文："""
-    
+
     client = OpenAI(
         api_key=api_key,
         base_url='https://api.deepseek.com'
     )
-    
+
     response = client.chat.completions.create(
         model='deepseek-chat',
         messages=[{'role': 'user', 'content': prompt}],
         temperature=0.3,
         max_tokens=16384
     )
-    
+
     return response.choices[0].message.content
