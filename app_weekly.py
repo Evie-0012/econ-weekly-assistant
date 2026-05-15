@@ -11,7 +11,8 @@ st.markdown('<div style="text-align:center;color:#666;margin-bottom:2rem;">基�
 # 侧边栏
 with st.sidebar:
     st.header("⚙️ 操作面板")
-    api_key = st.text_input("DeepSeek API Key", type="password")
+    default_key = st.secrets.get("DEEPSEEK_API_KEY", "")
+    api_key = st.text_input("DeepSeek API Key", type="password", value=default_key)
     st.divider()
     if st.button("🔄 采集本周新闻", use_container_width=True):
         with st.spinner("正在从RSS源抓取新闻..."):
