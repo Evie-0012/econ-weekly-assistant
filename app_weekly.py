@@ -7,7 +7,7 @@ from openai import OpenAI
 # ===== 配置 =====
 DATA_FILE = 'weekly_articles.json'
 PASSWORD = "123456"                # 访问密码，可自行修改
-DEFAULT_API_KEY = "sk-你的真实密钥"  # 改为你自己的 DeepSeek API Key
+DEFAULT_API_KEY = "sk-81a96d19d6c94383b3ae4af2143e9336"  # 改为你自己的 DeepSeek API Key
 
 st.set_page_config(page_title="数字经济周刊生成器", page_icon="📰", layout="centered")
 st.markdown('<div style="text-align:center;font-size:2.5rem;font-weight:700;">📰 数字经济周刊生成器</div>', unsafe_allow_html=True)
