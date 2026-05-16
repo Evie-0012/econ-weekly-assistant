@@ -6,16 +6,21 @@ from openai import OpenAI
 
 # ===== 配置 =====
 DATA_FILE = 'weekly_articles.json'
-
-# 你的默认 API Key（云端使用时建议改为空字符串，让用户自己输入，否则会暴露在链接中）
-DEFAULT_API_KEY = "sk-把你的真实密钥粘贴到这里"
+PASSWORD = "123456"                # 访问密码，可自行修改
+DEFAULT_API_KEY = "sk-81a96d19d6c94383b3ae4af2143e9336"  # 改为你自己的 DeepSeek API Key
 
 st.set_page_config(page_title="数字经济周刊生成器", page_icon="📰", layout="centered")
 st.markdown('<div style="text-align:center;font-size:2.5rem;font-weight:700;">📰 数字经济周刊生成器</div>', unsafe_allow_html=True)
 st.markdown('<div style="text-align:center;color:#666;margin-bottom:2rem;">课题组内部使用 · 基于微信公众号真实数据</div>', unsafe_allow_html=True)
 
-# 侧边栏
+# 侧边栏：密码 + 配置
 with st.sidebar:
+    st.header("🔐 验证访问")
+    password_input = st.text_input("请输入访问密码", type="password")
+    if password_input != PASSWORD:
+        st.warning("密码错误，请重试。")
+        st.stop()  # 密码不对就停止渲染后续内容
+
     st.header("⚙️ 配置")
     api_key = st.text_input(
         "DeepSeek API Key",
@@ -62,14 +67,18 @@ if st.button("📝 生成本周数字经济周刊", type="primary", use_containe
 请生成周刊全文："""
 
             with st.spinner("AI 正在生成周刊..."):
-                client = OpenAI(api_key=api_key, base_url='https://api.deepseek.com')
-                response = client.chat.completions.create(
-                    model='deepseek-chat',
-                    messages=[{'role': 'user', 'content': prompt}],
-                    temperature=0.3,
-                    max_tokens=16384
-                )
-                weekly = response.choices[0].message.content
+                try:
+                    client = OpenAI(api_key=api_key, base_url='https://api.deepseek.com')
+                    response = client.chat.completions.create(
+                        model='deepseek-chat',
+                        messages=[{'role': 'user', 'content': prompt}],
+                        temperature=0.3,
+                        max_tokens=16384
+                    )
+                    weekly = response.choices[0].message.content
+                except Exception as e:
+                    st.error(f"生成失败，请检查 API Key 是否正确：{e}")
+                    st.stop()
 
             st.markdown(weekly)
             st.download_button("📥 下载周刊", weekly,
