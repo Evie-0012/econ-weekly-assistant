@@ -12,7 +12,21 @@ st.markdown('<div style="text-align:center;color:#666;margin-bottom:2rem;">基�
 with st.sidebar:
     st.header("⚙️ 操作面板")
     default_key = st.secrets.get("DEEPSEEK_API_KEY", "")
-    api_key = st.text_input("DeepSeek API Key", type="password", value=default_key)
+   with st.sidebar:
+    st.header("⚙️ 操作面板")
+    
+    # 从 Streamlit Secrets 读取默认 Key
+    default_key = st.secrets.get("DEEPSEEK_API_KEY", "")
+    api_key = st.text_input(
+        "DeepSeek API Key",
+        type="password",
+        value=default_key,
+        help="已预置默认 Key，也可手动修改"
+    )
+    
+    # 后续按钮保持不变
+    if st.button("🔄 采集本周新闻", use_container_width=True):
+        # ...
     st.divider()
     if st.button("🔄 采集本周新闻", use_container_width=True):
         with st.spinner("正在从RSS源抓取新闻..."):
