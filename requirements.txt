@@ -1,8 +1,2 @@
-<<<<<<< HEAD
 streamlit
 openai
-=======
-streamlit
-openai
->>>>>>> 53ab2ee444b7f0849443752e982ddbb99ad7863c
-feedparser
